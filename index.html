@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧬 Тест по Генетике</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-container {
+            margin: 30px 0;
+        }
+        
+        .question-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f9f9f9;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+        
+        .option input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .option label {
+            flex: 1;
+            cursor: pointer;
+            user-select: none;
+            font-size: 16px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 13px 35px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-check {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-width: 180px;
+        }
+        
+        .btn-check:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-next {
+            background: #4CAF50;
+            color: white;
+            min-width: 180px;
+            display: none;
+        }
+        
+        .btn-next:hover {
+            background: #45a049;
+            transform: translateY(-3px);
+        }
+        
+        .btn-reset {
+            background: #f44336;
+            color: white;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+            display: block;
+        }
+        
+        .results {
+            text-align: center;
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .score {
+            font-size: 64px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 30px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧬 ГЕНЕТИКА ТЕСТ</h1>
+            <p>Все 286 вопросов (WebAssembly + C)</p>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div id="questionCount">Загрузка...</div>
+        </div>
+        
+        <div id="quiz">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>⏳ Инициализация теста...</p>
+            </div>
+        </div>
+        
+        <div id="results" class="results">
+            <h2>🎉 Тест завершен!</h2>
+            <div class="score"><span id="finalScore">0</span>/<span id="totalScore">0</span></div>
+            <div id="percentageResult"></div>
+            <button class="btn-reset" onclick="location.reload()">🔄 Начать заново</button>
+        </div>
+    </div>
+
+    <script async src="genetica.js"></script>
+    <script>
+        let quizData = {
+            total: 0,
+            questions: [],
+            answered: false
+        };
+        let currentQuestion = 0;
+        let score = 0;
+
+        function initQuiz() {
+            const totalQuestions = Module.ccall('get_total_questions', 'number', [], []);
+            quizData.total = totalQuestions;
+            quizData.questions = [];
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                quizData.questions.push(i);
+            }
+            
+            for (let i = quizData.questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [quizData.questions[i], quizData.questions[j]] = [quizData.questions[j], quizData.questions[i]];
+            }
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= quizData.total) {
+                showResults();
+                return;
+            }
+
+            const idx = quizData.questions[currentQuestion];
+            const questionText = Module.ccall('get_question', 'string', ['number'], [idx]);
+            const numOptions = Module.ccall('get_num_options', 'number', ['number'], [idx]);
+            const originalIndex = Module.ccall('get_original_index', 'number', ['number'], [idx]);
+            
+            let html = `
+                <div class="question-container">
+                    <div class="question-meta">
+                        <span>Вопрос ${currentQuestion + 1} из ${quizData.total}</span>
+                        <span>Исходный №${originalIndex}</span>
+                    </div>
+                    <div class="question-text">${escapeHtml(questionText)}</div>
+                    <div class="options" id="optionsContainer">
+            `;
+            
+            for (let i = 0; i < numOptions; i++) {
+                const option = Module.ccall('get_option', 'string', ['number', 'number'], [idx, i]);
+                html += `
+                    <div class="option">
+                        <input type="checkbox" id="opt${i}" value="${i+1}">
+                        <label for="opt${i}">${escapeHtml(option)}</label>
+                    </div>
+                `;
+            }
+            
+            html += `
+                    </div>
+                    <div id="feedback" class="feedback"></div>
+                    <div class="button-group">
+                        <button class="btn-check" id="checkBtn" onclick="checkAnswer(${idx})">✓ Проверить</button>
+                        <button class="btn-next" id="nextBtn" onclick="nextQuestion()">Дальше →</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('quiz').innerHTML = html;
+            document.getElementById('questionCount').textContent = 
+                `Прогресс: ${currentQuestion + 1} из ${quizData.total}`;
+            
+            const progress = ((currentQuestion + 1) / quizData.total) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            quizData.answered = false;
+        }
+
+        function checkAnswer(questionIdx) {
+            if (quizData.answered) return;
+            quizData.answered = true;
+
+            const checkboxes = document.querySelectorAll('#optionsContainer input[type="checkbox"]:checked');
+            let userAnswer = '';
+            
+            checkboxes.forEach(cb => userAnswer += cb.value);
+            
+            if (!userAnswer) {
+                alert('Выберите хотя бы один ответ!');
+                quizData.answered = false;
+                return;
+            }
+            
+            const isCorrect = Module.ccall('check_answer', 'number', 
+                ['number', 'string'], [questionIdx, userAnswer]);
+            
+            const feedback = document.getElementById('feedback');
+            const nextBtn = document.getElementById('nextBtn');
+            const checkBtn = document.getElementById('checkBtn');
+            
+            if (isCorrect) {
+                feedback.textContent = '✅ Верно!';
+                feedback.className = 'feedback correct';
+                score++;
+            } else {
+                const correctAnswer = Module.ccall('get_correct_answer', 'string', 
+                    ['number'], [questionIdx]);
+                feedback.textContent = `❌ Ошибка. Правильный: ${correctAnswer}`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            checkBtn.style.display = 'none';
+            nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function showResults() {
+            const percentage = ((score / quizData.total) * 100).toFixed(1);
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('totalScore').textContent = quizData.total;
+            document.getElementById('percentageResult').textContent = `${percentage}% 🎯`;
+            document.getElementById('results').classList.add('show');
+            document.getElementById('quiz').style.display = 'none';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        var Module = {
+            onRuntimeInitialized: function() {
+                initQuiz();
+            }
+        };
+    </script>
+</body>
+</html>
