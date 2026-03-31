@@ -250,8 +250,8 @@
         </div>
     </div>
 
-    <script async src="genetica.js"></script>
     <script>
+        // === Глобальные переменные и функции теста ===
         let quizData = {
             total: 0,
             questions: [],
@@ -260,21 +260,10 @@
         let currentQuestion = 0;
         let score = 0;
 
-        function initQuiz() {
-            const totalQuestions = Module.ccall('get_total_questions', 'number', [], []);
-            quizData.total = totalQuestions;
-            quizData.questions = [];
-            
-            for (let i = 0; i < totalQuestions; i++) {
-                quizData.questions.push(i);
-            }
-            
-            for (let i = quizData.questions.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [quizData.questions[i], quizData.questions[j]] = [quizData.questions[j], quizData.questions[i]];
-            }
-            
-            showQuestion();
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
         function showQuestion() {
@@ -379,17 +368,41 @@
             document.getElementById('quiz').style.display = 'none';
         }
 
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        function initQuiz() {
+            try {
+                const totalQuestions = Module.ccall('get_total_questions', 'number', [], []);
+                quizData.total = totalQuestions;
+                quizData.questions = [];
+                
+                for (let i = 0; i < totalQuestions; i++) {
+                    quizData.questions.push(i);
+                }
+                
+                // Перемешивание
+                for (let i = quizData.questions.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [quizData.questions[i], quizData.questions[j]] = [quizData.questions[j], quizData.questions[i]];
+                }
+                
+                showQuestion();
+            } catch(e) {
+                console.error("Ошибка инициализации:", e);
+                document.getElementById('quiz').innerHTML = '<div class="loading">❌ Ошибка загрузки теста. Проверьте наличие файла genetica.wasm.</div>';
+            }
         }
 
+        // === Определяем Module ДО загрузки genetica.js ===
         var Module = {
             onRuntimeInitialized: function() {
+                console.log("WASM загружен, инициализация теста...");
                 initQuiz();
+            },
+            onAbort: function(what) {
+                console.error("WASM abort:", what);
+                document.getElementById('quiz').innerHTML = '<div class="loading">❌ Критическая ошибка: ' + what + '</div>';
             }
         };
     </script>
+    <script async src="genetica.js"></script>
 </body>
 </html>
